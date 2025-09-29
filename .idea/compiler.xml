@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Annotation profile for Demo: DDD with Domain Events" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/${org.mapstruct.version}/mapstruct-processor-${org.mapstruct.version}.jar" />
+        </processorPath>
+        <module name="domain-service" />
+        <module name="adapter-in" />
+        <module name="adapter-out" />
+        <module name="domain-event-type" />
+        <module name="domain-model" />
+        <module name="usecase-in" />
+        <module name="usecase-exception" />
+        <module name="usecase-out" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="adapter" options="-parameters" />
+      <module name="adapter-in" options="-parameters" />
+      <module name="adapter-out" options="-parameters" />
+      <module name="ddd-with-domain-events" options="-parameters" />
+      <module name="domain" options="-parameters" />
+      <module name="domain-event-type" options="-parameters" />
+      <module name="domain-model" options="-parameters" />
+      <module name="domain-service" options="-parameters" />
+      <module name="usecase" options="-parameters" />
+      <module name="usecase-exception" options="-parameters" />
+      <module name="usecase-in" options="-parameters" />
+      <module name="usecase-out" options="-parameters" />
+    </option>
+  </component>
+</project>
