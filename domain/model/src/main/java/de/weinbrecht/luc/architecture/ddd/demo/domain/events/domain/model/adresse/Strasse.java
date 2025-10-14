@@ -2,12 +2,12 @@ package de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adres
 
 import io.github.domainprimitives.type.ValueObject;
 
-import static io.github.domainprimitives.validation.Constraints.isNotNull;
+import static io.github.domainprimitives.validation.Constraints.isNotBlank;
 
 public class Strasse extends ValueObject<String> {
 
     public Strasse(String value) {
-        super(value, isNotNull());
+        super(value, isNotBlank());
     }
 
 }

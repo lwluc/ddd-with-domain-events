@@ -7,7 +7,7 @@ import static io.github.domainprimitives.validation.Constraints.isPattern;
 public class Postleitzahl extends ValueObject<String> {
 
     public Postleitzahl(String value) {
-        super(value, isPattern("\\d{5})"));
+        super(value, isPattern("\\d{5}"));
     }
 
 }

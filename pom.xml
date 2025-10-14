@@ -68,6 +68,11 @@
                 <artifactId>adapter-out</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>de.weinbrecht.luc.architecture.ddd.demo.domain.events</groupId>
+                <artifactId>domain-event-type</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.github.domain-primitives</groupId>

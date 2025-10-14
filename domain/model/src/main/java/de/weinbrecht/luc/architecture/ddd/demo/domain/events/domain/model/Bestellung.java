@@ -2,12 +2,13 @@ package de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model;
 
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.AbholortReferenz;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse;
-import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent;
+import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.abfrage.BestellungsabfrageEvent;
+import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent;
 import io.github.domainprimitives.object.Aggregate;
+import io.github.domainprimitives.validation.InvariantException;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.UUID;
 import java.util.function.Function;
 
 @Getter
@@ -26,20 +27,35 @@ public class Bestellung extends Aggregate {
     private final Function<AbholortReferenz, Adresse> abholortSupplier;
 
     public Bestellung(
-            BestellungBoundaryEvent bestellungBoundaryEvent,
+            BestellungsabfrageEvent bestellungsabfrageEvent,
             Function<Bestellnummer, Adresse> adresseSupplier,
             Function<AbholortReferenz, Adresse>  abholortSupplier
     ) {
-       this(
-               new Bestellnummer(UUID.randomUUID().toString()),
-               bestellungBoundaryEvent.getKundennummer(),
-               bestellungBoundaryEvent.getAbholortReferenz(),
-               adresseSupplier,
-               abholortSupplier
-       );
+        this(
+                bestellungsabfrageEvent.getBestellnummer(),
+                bestellungsabfrageEvent.getKundennummer(),
+                bestellungsabfrageEvent.getAbholortReferenz(),
+                adresseSupplier,
+                abholortSupplier
+        );
     }
 
-    public Bestellung(
+    private Bestellung(
+            Bestellnummer bestellnummer,
+            Kundennummer kundennummer,
+            AbholortReferenz abholortReferenz
+    ) {
+        this.bestellnummer = bestellnummer;
+        this.kundennummer = kundennummer;
+        this.abholortReferenz = abholortReferenz;
+
+        this.adresseSupplier = null;
+        this.abholortSupplier = null;
+
+        this.validate();
+    }
+
+    private Bestellung(
             Bestellnummer bestellnummer,
             Kundennummer kundennummer,
             AbholortReferenz abholortReferenz,
@@ -52,15 +68,16 @@ public class Bestellung extends Aggregate {
         this.adresseSupplier = adresseSupplier;
         this.abholortSupplier = abholortSupplier;
 
+        validateNotNull(adresseSupplier, "Adresse Supplier");
+        validateNotNull(abholortSupplier, "Abholort Supplier");
+
         this.validate();
     }
 
     @Override
     protected void validate() {
-        validateNotNull(bestellnummer, "ID");
+        validateNotNull(bestellnummer, "Bestellnummer");
         validateNotNull(kundennummer, "Kundennummer");
-        validateNotNull(adresseSupplier, "Adresse Supplier");
-        validateNotNull(abholortSupplier, "Abholort Supplier");
 
         evaluateValidations();
     }
@@ -70,5 +87,17 @@ public class Bestellung extends Aggregate {
             return abholortSupplier.apply(abholortReferenz);
         }
         return adresseSupplier.apply(bestellnummer);
+    }
+
+    public static void validate(Bestellnummer bestellnummer, BestellungsaufgabeEvent bestellungsaufgabeEvent) {
+        new Bestellung(
+                bestellnummer,
+                bestellungsaufgabeEvent.getKundennummer(),
+                bestellungsaufgabeEvent.getAbholortReferenz()
+        );
+
+        if (bestellungsaufgabeEvent.isBestellungsspezifischeAdresse() && bestellungsaufgabeEvent.getAdresse() == null) {
+            throw new InvariantException("Bestellung", "Eine Bestellung ohne Abholort oder Adresse ist nicht erlaubt.");
+        }
     }
 }
