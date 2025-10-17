@@ -29,6 +29,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <domain.primitives.version>0.1.1</domain.primitives.version>
         <lombok.version>1.18.38</lombok.version>
+        <urm-maven-plugin.version>2.1.1</urm-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -95,11 +96,24 @@
     </dependencyManagement>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.iluwatar.urm</groupId>
+                    <artifactId>urm-maven-plugin</artifactId>
+                    <version>${urm-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>

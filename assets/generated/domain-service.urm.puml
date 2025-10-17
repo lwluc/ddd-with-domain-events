@@ -1,0 +1,49 @@
+@startuml
+package de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.in {
+  interface Bestellungsabfrage {
+    + query(Bestellnummer) : Bestellung {abstract}
+  }
+  interface Bestellungserzeugung {
+    + create(BestellungsaufgabeEventMitAbholort) : Bestellnummer {abstract}
+    + create(BestellungsaufgabeMitAdresseEvent) : Bestellnummer {abstract}
+  }
+}
+package de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.out {
+  interface AbholortQuery {
+    + find(AbholortReferenz) : Adresse {abstract}
+  }
+  interface AdressRepository {
+    + find(Bestellnummer) : Adresse {abstract}
+  }
+  interface BestellungRepository {
+    + find(Bestellnummer) : BestellungsabfrageEvent {abstract}
+    + insert(Bestellnummer, BestellungsaufgabeEvent) {abstract}
+  }
+}
+package de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.service {
+  ~class AdresseService {
+    - abholortQuery : AbholortQuery
+    - adressRepository : AdressRepository
+    + AdresseService(adressRepository : AdressRepository, abholortQuery : AbholortQuery)
+    + getAbholort(abholortReferenz : AbholortReferenz) : Adresse
+    + getAdresse(bestellnummer : Bestellnummer) : Adresse
+  }
+  ~class BestellungDomainService {
+    - adresseService : AdresseService
+    - bestellungRepository : BestellungRepository
+    + BestellungDomainService(adresseService : AdresseService, bestellungRepository : BestellungRepository)
+    + create(bestellungsaufgabeEventMitAbholort : BestellungsaufgabeEventMitAbholort) : Bestellnummer
+    + create(bestellungsaufgabeMitAdresseEvent : BestellungsaufgabeMitAdresseEvent) : Bestellnummer
+    - createFromEvent(bestellungsaufgabeEvent : BestellungsaufgabeEvent) : Bestellnummer
+    + query(bestellnummer : Bestellnummer) : Bestellung
+  }
+}
+BestellungDomainService -->  "-adresseService" AdresseService
+AdresseService -->  "-adressRepository" AdressRepository
+AdresseService -->  "-abholortQuery" AbholortQuery
+BestellungDomainService -->  "-bestellungRepository" BestellungRepository
+BestellungDomainService ..|> Bestellungserzeugung 
+BestellungDomainService ..|> Bestellungsabfrage 
+BestellungDomainService ..|> Bestellungserzeugung 
+BestellungDomainService ..|> Bestellungsabfrage 
+@enduml
