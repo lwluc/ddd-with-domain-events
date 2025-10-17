@@ -1,0 +1,63 @@
+@startuml
+
+package "Demo" {
+
+    package "domain" #LightBlue {
+        package "model" #white {
+            component "Bestellung" as domain.model.bestellung <<Aggregate>>
+            component "Adresse" as domain.model.adresse <<Adresse>>
+            component "Abholort Referenz" as domain.model.abholortref <<Value Object>>
+
+            domain.model.bestellung -- domain.model.adresse
+            domain.model.bestellung -- domain.model.abholortref
+
+        }
+
+        package "service" #white {
+            component "BestellungDomainService" as domain.service.bestellung <<Service>>
+            component "AdresseService" as domain.service.adresse <<Service>>
+
+            domain.service.bestellung --> domain.service.adresse : nutzt
+        }
+
+        domain.service.bestellung ..> domain.model.bestellung
+        domain.service.adresse ..> domain.model.adresse
+    }
+
+    package "usecase" #LightGreen {
+        package "in" as usecase.in #white {
+          interface "Bestellungsabfrage" as usecase.in.abfrage <<Usecase>>
+          interface "Bestellungserzeugung" as usecase.in.erzeugung <<Usecase>>
+        }
+
+        package "out" as usecase.out #white {
+          interface "AbholortQuery" as usecase.out.abholort <<Usecase>>
+          interface "AdresseRepository" as usecase.out.adresseRepo <<Usecase>>
+          interface "BestellungRepository" as usecase.out.bestellungRepo <<Usecase>>
+        }
+
+        usecase.in -[hidden]- usecase.out
+    }
+
+    domain.service.bestellung --|> usecase.in.abfrage
+    domain.service.bestellung --|> usecase.in.erzeugung
+    domain.service.bestellung ..> usecase.out.bestellungRepo
+
+    domain.service.adresse ..> usecase.out.abholort
+    domain.service.adresse ..> usecase.out.adresseRepo
+
+    package "adapter" {
+        package "in" as adapter.in #lightgray {
+            component " " as adapter.in.component <<Adapter / Mapper / DTO>>
+        }
+
+        package "out" as adapter.out #lightgray {
+            component " " as adapter.out.component <<Adapter / Mapper / DTO>>
+        }
+    }
+
+    adapter.in ...> usecase.in
+    adapter.out ---|> usecase.out
+}
+
+@enduml
