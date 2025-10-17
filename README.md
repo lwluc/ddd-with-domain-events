@@ -24,3 +24,6 @@ Nachfolgend die Bausteinsicht, der einzelnen Elemente und deren Interaktionen.
 
 ![clean_architecture_domain_events.svg](assets/clean_architecture_domain_events.svg)
 
+### Bausteinsicht: Domänen Serivce / Kern isoliert
+
+![domain-service.urm.svg](assets/generated/domain-service.urm.svg)
