@@ -31,7 +31,8 @@
         <lombok.version>1.18.38</lombok.version>
         <plantuml-maven-plugin.version>1.2024.6</plantuml-maven-plugin.version>
         <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
-        <plantuml-generator-maven-plugin.version>3.0.1</plantuml-generator-maven-plugin.version>
+        <plantuml-generator-maven-plugin.version>${asciidoctorj-diagram.version}</plantuml-generator-maven-plugin.version>
+        <asciidoctorj-diagram.version>3.0.1</asciidoctorj-diagram.version>
     </properties>
 
     <dependencyManagement>
@@ -133,6 +134,11 @@
                 <artifactId>plantuml-generator-maven-plugin</artifactId>
                 <version>${plantuml-generator-maven-plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor-maven-plugin.version}</version>
+            </plugin>
         </plugins>
         </pluginManagement>
         <plugins>
@@ -154,6 +160,37 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj-diagram</artifactId>
+                        <version>${asciidoctorj-diagram.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                    <sourceDirectory>${project.basedir}/docs</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/generated-docs/html</outputDirectory>
+                    <backend>html5</backend>
+                    <requires>
+                        <require>asciidoctor-diagram</require> <!-- damit PlantUML & Co. funktionieren -->
+                    </requires>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>generate-docs</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
