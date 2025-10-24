@@ -18,9 +18,6 @@ Das Projekt zeigt anhand eines einfachen **E-Commerce-Szenarios**, wie eine **Be
 
 💡 **Nebeneffekt**: Durch diese Implementierung wird die Adresse einer Bestellung automatisch lazy geladen – unabhängig davon, ob sie aus dem lokalen Aggregat oder über einen Adapter aus einem anderen Bounded Context stammt. Das sorgt für eine saubere Entkopplung und effiziente Ressourcennutzung.
 
-## Bausteinsicht
+## Architektur Dokumentation
 
-Nachfolgend die Bausteinsicht, der einzelnen Elemente und deren Interaktionen.
-
-![clean_architecture_domain_events.svg](docs/clean_architecture_domain_events.svg)
-
+Die Architektur Dokumentation ist [hier](https://lwluc.github.io/ddd-with-domain-events) zu finden.
