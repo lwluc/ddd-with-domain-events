@@ -33,6 +33,7 @@
         <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
         <plantuml-generator-maven-plugin.version>${asciidoctorj-diagram.version}</plantuml-generator-maven-plugin.version>
         <asciidoctorj-diagram.version>3.0.1</asciidoctorj-diagram.version>
+        <asciidoctorj-diagram-plantuml.version>1.2025.3</asciidoctorj-diagram-plantuml.version>
     </properties>
 
     <dependencyManagement>
@@ -99,49 +100,53 @@
     </dependencyManagement>
 
     <build>
-        <pluginManagement>
         <plugins>
             <plugin>
-                <groupId>net.sourceforge.plantuml</groupId>
-                <artifactId>plantuml-maven-plugin</artifactId>
-                <version>${plantuml-maven-plugin.version}</version>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor-maven-plugin.version}</version>
+
+                <dependencies>
+                    <!-- 💡 Java-basierte Diagrammunterstützung -->
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj-diagram</artifactId>
+                        <version>${asciidoctorj-diagram.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj-diagram-plantuml</artifactId>
+                        <version>${asciidoctorj-diagram-plantuml.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                    <sourceDirectory>${project.basedir}/docs</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/generated-docs/html</outputDirectory>
+                    <outputFile>${project.build.directory}/generated-docs/html/index.html</outputFile>
+                    <backend>html5</backend>
+                    <requires>
+                        <require>asciidoctor-diagram</require> <!-- damit PlantUML & Co. funktionieren -->
+                    </requires>
+
+                    <!-- ⚙️ Optional, aber hilfreich -->
+                    <attributes>
+                        <imagesoutdir>${project.build.directory}/generated-docs/html/images</imagesoutdir>
+                        <data-uri>true</data-uri> <!-- Diagramme inline einbetten -->
+                    </attributes>
+                </configuration>
+
                 <executions>
                     <execution>
-                        <id>generate-diagrams</id>
-                        <phase>generate-resources</phase>
+                        <id>generate-docs</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>process-asciidoc</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>${asciidoctor-maven-plugin.version}</version>
-                <configuration>
-                    <requires>
-                        <require>asciidoctor-diagram</require>
-                    </requires>
-                    <sourceDirectory>${project.basedir}/docs</sourceDirectory>
-                    <outputDirectory>${project.build.directory}/docs</outputDirectory>
-                    <backend>html</backend>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>de.elnarion.maven</groupId>
-                <artifactId>plantuml-generator-maven-plugin</artifactId>
-                <version>${plantuml-generator-maven-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>${asciidoctor-maven-plugin.version}</version>
-            </plugin>
-        </plugins>
-        </pluginManagement>
-        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -160,37 +165,6 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctor-maven-plugin</artifactId>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoctorj-diagram</artifactId>
-                        <version>${asciidoctorj-diagram.version}</version>
-                    </dependency>
-                </dependencies>
-
-                <configuration>
-                    <sourceDirectory>${project.basedir}/docs</sourceDirectory>
-                    <outputDirectory>${project.build.directory}/generated-docs/html</outputDirectory>
-                    <backend>html5</backend>
-                    <requires>
-                        <require>asciidoctor-diagram</require> <!-- damit PlantUML & Co. funktionieren -->
-                    </requires>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <id>generate-docs</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>process-asciidoc</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

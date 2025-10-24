@@ -16,7 +16,7 @@ jobs:
           distribution: 'temurin'
           java-version: 21
       - name: Build UML + Docs
-        run: mvn -B clean package -DskipTests
+        run: mvn -B org.asciidoctor:asciidoctor-maven-plugin:process-asciidoc
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3

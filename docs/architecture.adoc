@@ -6,7 +6,7 @@ Nachfolgend die Bausteinsicht, der einzelnen Elemente und deren Interaktionen.
 
 [plantuml,format=svg]
 ....
-include::clean_architecture_domain_events.puml[]
+include::clean_architecture_domain_events.puml[format=svg]
 ....
 
 
@@ -14,5 +14,5 @@ include::clean_architecture_domain_events.puml[]
 === Domain Serivce
 [plantuml,format=svg]
 ....
-include::domain-service-classes.puml[]
+include::domain-service-classes.puml[format=svg]
 ....
