@@ -8,7 +8,6 @@ import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAbholort;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeMitAdresseEvent;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.out.BestellungRepository;
-import io.github.domainprimitives.validation.InvariantException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -53,15 +52,15 @@ class BestellungDomainServiceTest {
         @Test
         void should_throw_if_creation_event_with_abholort_is_null() {
             assertThatThrownBy(() -> classUnderTest.create((BestellungsaufgabeEventMitAbholort) null))
-                    .isInstanceOf(InvariantException.class)
-                    .hasMessageContaining("Bestellung darf nicht leer sein.");
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Bestellung darf nicht leer sein");
         }
 
         @Test
         void should_throw_if_creation_event_with_adresse_is_null() {
             assertThatThrownBy(() -> classUnderTest.create((BestellungsaufgabeMitAdresseEvent) null))
-                    .isInstanceOf(InvariantException.class)
-                    .hasMessageContaining("Bestellung darf nicht leer sein.");
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Bestellung darf nicht leer sein");
         }
 
         @Test
@@ -106,8 +105,8 @@ class BestellungDomainServiceTest {
         @Test
         void should_throw_if_query_with_null_bestellnummer() {
             assertThatThrownBy(() -> classUnderTest.query(null))
-                    .isInstanceOf(InvariantException.class)
-                    .hasMessageContaining("Bestellung ohne Nummer kann nicht abgerufen werden.");
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Bestellung ohne Nummer kann nicht abgerufen werden");
         }
 
         @Test

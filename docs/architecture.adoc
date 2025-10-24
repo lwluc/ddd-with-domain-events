@@ -1,5 +1,49 @@
 = Architektur Dokumentation
 
+== Lösungsstrategie
+
+=== Aggregate mit Entiät aus unterschiedlichen Quellen
+
+|===
+|Aspekt | Beschreibung
+
+|Einsatzbereich
+|Hat ein Aggregate eine Entität, die sowohl eine ad-hoc Entität oder ein Value Objekt sein kann, als auch eine Referenz auf ein anderes Aggregat.
+
+|Ziel
+|Der Client des Domänenobjektes mit soll nicht selbst entscheiden müssen, wie er die richtige Kind-Entität bzw. die Referenz auflösen muss.
+|===
+
+Um dem Client den Abruf der Entität zu erleichtern, bzw. das Wissen darüber, wie die unterschiedlichen Quellen zur Auflösung der Kind-Entität zu nutzen sind, löst das Aggregate dieses auf. 
+
+Nachfolgend wird ein Beispiel aufgezeigt, indem eine Bestellung eine eigene Adresse als Entität der Bestellung haben kann oder einen Referenz auf einen Abholort. Der Client der Bestellung soll das Wissen über die Auflösung der Adresse nicht kennen, daher löst das Aggregate selbst die Adresse für den Client auf.
+
+[source,java]
+----
+include::../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[lines=85..90]
+----
+
+Durch die Abbildung über eine Callback Funktion wird die Adresse einer Bestellung auch automatisch *layz loaded*. D.h. unabhängig von der Quelle, aus der die Adresse geladen werden muss, wird diese erst dann abgerufen, wenn der Client den Getter der Adresse der Bestellung aufruft. Die gesamte Abbildung des Aggretates ist link:../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[hier] zu finden
+
+
+Beim Abfragen des Aggregates im Domain-Service, in dem Beispiel hier dem link:../domain/service/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/service/BestellungDomainService.java[BestellungDomainService.java], werden die entsprechenden Callbacks übergeben, sodass die Adresse zur Laufzeit ermittelt werden kann:
+
+[source,java]
+----
+include::../domain/service/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/service/BestellungDomainService.java[lines=49..62]
+----
+
+==== Domänen Events zur Steigerung der Ausdrucksstärke
+
+Da in dem hier beschriebenen Einsatzszenario, das Aggregate eine Entität aus unterschiedlichen Quellen (ad-hoc und Referenz) abbildet, muss auch die Erzeugung des Aggregates angepasst werden. Dazu wird mit `DomainBoundaryTransportObject` gearbeitet. Es ist weiterhin wichtig, dass der Domänenkern die Validierung der Fachlichkeit abbildet.
+
+Die der Erzeugung des Domänenobjektes wird nachfolgend im Kontext des Beststellungsbeispiel dargestellt:
+
+[source,java]
+----
+include::../domain/service/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/service/BestellungDomainService.java[lines=26..47]
+----
+
 == Bausteinsicht
 
 Nachfolgend die Bausteinsicht, der einzelnen Elemente und deren Interaktionen.
@@ -8,8 +52,6 @@ Nachfolgend die Bausteinsicht, der einzelnen Elemente und deren Interaktionen.
 ....
 include::clean_architecture_domain_events.puml[format=svg]
 ....
-
-
 
 === Domain Serivce
 [plantuml,format=svg]

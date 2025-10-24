@@ -11,7 +11,6 @@ import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.exception.B
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.in.Bestellungsabfrage;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.in.Bestellungserzeugung;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.out.BestellungRepository;
-import io.github.domainprimitives.validation.InvariantException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,7 @@ class BestellungDomainService implements Bestellungserzeugung, Bestellungsabfrag
 
     private Bestellnummer createFromEvent(BestellungsaufgabeEvent bestellungsaufgabeEvent) throws BestellungException {
         if (bestellungsaufgabeEvent == null) {
-            throw new InvariantException(this.getClass().getName(), "Bestellung darf nicht leer sein.");
+            throw new IllegalArgumentException("Bestellung darf nicht leer sein");
         }
 
         final Bestellnummer bestellnummer = new Bestellnummer(UUID.randomUUID().toString());
@@ -50,7 +49,7 @@ class BestellungDomainService implements Bestellungserzeugung, Bestellungsabfrag
     @Override
     public Bestellung query(Bestellnummer bestellnummer) throws BestellungNotFoundException {
         if (bestellnummer == null) {
-            throw new InvariantException(this.getClass().getName(), "Bestellung ohne Nummer kann nicht abgerufen werden.");
+            throw new IllegalArgumentException("Bestellung ohne Nummer kann nicht abgerufen werden");
         }
 
         final BestellungsabfrageEvent bestellungsabfrageEvent = bestellungRepository.find(bestellnummer);
