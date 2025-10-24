@@ -22,5 +22,5 @@ Das Projekt zeigt anhand eines einfachen **E-Commerce-Szenarios**, wie eine **Be
 
 Nachfolgend die Bausteinsicht, der einzelnen Elemente und deren Interaktionen.
 
-![clean_architecture_domain_events.svg](assets/clean_architecture_domain_events.svg)
+![clean_architecture_domain_events.svg](docs/clean_architecture_domain_events.svg)
 

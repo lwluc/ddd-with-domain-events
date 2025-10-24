@@ -29,6 +29,9 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <domain.primitives.version>0.1.1</domain.primitives.version>
         <lombok.version>1.18.38</lombok.version>
+        <plantuml-maven-plugin.version>1.2024.6</plantuml-maven-plugin.version>
+        <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
+        <plantuml-generator-maven-plugin.version>3.0.1</plantuml-generator-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +98,43 @@
     </dependencyManagement>
 
     <build>
+        <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>net.sourceforge.plantuml</groupId>
+                <artifactId>plantuml-maven-plugin</artifactId>
+                <version>${plantuml-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-diagrams</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor-maven-plugin.version}</version>
+                <configuration>
+                    <requires>
+                        <require>asciidoctor-diagram</require>
+                    </requires>
+                    <sourceDirectory>${project.basedir}/docs</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/docs</outputDirectory>
+                    <backend>html</backend>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>de.elnarion.maven</groupId>
+                <artifactId>plantuml-generator-maven-plugin</artifactId>
+                <version>${plantuml-generator-maven-plugin.version}</version>
+            </plugin>
+        </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

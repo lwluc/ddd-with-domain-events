@@ -45,4 +45,29 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>de.elnarion.maven</groupId>
+                <artifactId>plantuml-generator-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-uml</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scanPackages>
+                        <scanPackage>${project.groupId}</scanPackage>
+                    </scanPackages>
+                    <outputDirectory>${maven.multiModuleProjectDirectory}/docs/</outputDirectory>
+                    <outputFilename>domain-service-classes.puml</outputFilename>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
