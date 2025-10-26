@@ -5,7 +5,7 @@ import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestel
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.abfrage.BestellungsabfrageEvent;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAbholort;
-import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeMitAdresseEvent;
+import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAdresse;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.exception.BestellungException;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.exception.BestellungNotFoundException;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.in.Bestellungsabfrage;
@@ -42,8 +42,8 @@ class BestellungDomainService implements Bestellungserzeugung, Bestellungsabfrag
     }
 
     @Override
-    public Bestellnummer create(BestellungsaufgabeMitAdresseEvent bestellungsaufgabeMitAdresseEvent) throws BestellungException {
-        return createFromEvent(bestellungsaufgabeMitAdresseEvent);
+    public Bestellnummer create(BestellungsaufgabeEventMitAdresse bestellungsaufgabeEventMitAdresse) throws BestellungException {
+        return createFromEvent(bestellungsaufgabeEventMitAdresse);
     }
 
     @Override

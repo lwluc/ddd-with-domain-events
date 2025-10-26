@@ -6,7 +6,7 @@ import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Kunden
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.*;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.abfrage.BestellungsabfrageEvent;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAbholort;
-import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeMitAdresseEvent;
+import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAdresse;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.out.BestellungRepository;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,8 +38,8 @@ class BestellungDomainServiceTest {
                     new AbholortReferenz("12")
                 );
 
-        private static final BestellungsaufgabeMitAdresseEvent BESTELLUNGSAUFGABE_MIT_ADRESSE_EVENT =
-                new BestellungsaufgabeMitAdresseEvent(
+        private static final BestellungsaufgabeEventMitAdresse BESTELLUNGSAUFGABE_MIT_ADRESSE_EVENT =
+                new BestellungsaufgabeEventMitAdresse(
                         new Kundennummer("12"),
                         new Adresse(
                                 new Strasse("Testweg"),
@@ -58,7 +58,7 @@ class BestellungDomainServiceTest {
 
         @Test
         void should_throw_if_creation_event_with_adresse_is_null() {
-            assertThatThrownBy(() -> classUnderTest.create((BestellungsaufgabeMitAdresseEvent) null))
+            assertThatThrownBy(() -> classUnderTest.create((BestellungsaufgabeEventMitAdresse) null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("Bestellung darf nicht leer sein");
         }

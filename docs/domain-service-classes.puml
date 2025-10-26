@@ -42,7 +42,7 @@ class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse
 }
 
 
-abstract class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent {
+abstract class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent {
 	{method} #validate () : void
 }
 
@@ -60,11 +60,11 @@ class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.
 }
 
 
-class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeMitAdresseEvent {
+class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAdresse {
 }
 
 
-interface de.weinbrecht.luc.architecture.ddd.demo.domain.events.type.DomainBoundaryTransportObject {
+interface de.weinbrecht.luc.architecture.ddd.demo.domain.events.type.DomainEvent {
 }
 
 
@@ -87,7 +87,7 @@ interface de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.in.Beste
 
 interface de.weinbrecht.luc.architecture.ddd.demo.domain.events.usecase.in.Bestellungserzeugung {
 	{method}  {abstract} +create ( bestellungsaufgabeEventMitAbholort : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAbholort ) : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestellnummer
-	{method}  {abstract} +create ( bestellungsaufgabeMitAdresseEvent : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeMitAdresseEvent ) : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestellnummer
+	{method}  {abstract} +create ( bestellungsaufgabeMitAdresseEvent : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAdresse ) : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestellnummer
 }
 
 
@@ -116,15 +116,15 @@ de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adres
 de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Ort : ort
 de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Postleitzahl : postleitzahl
 de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Strasse : strasse
-de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Kundennummer : kundennummer
-de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.AbholortReferenz : abholortReferenz
-de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse : adresse
-de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent ..|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.type.DomainBoundaryTransportObject
+de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Kundennummer : kundennummer
+de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.AbholortReferenz : abholortReferenz
+de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse : adresse
+de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent ..|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.type.DomainEvent
 de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.abfrage.BestellungsabfrageEvent *--  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestellnummer : bestellnummer
-de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.abfrage.BestellungsabfrageEvent --|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent
-de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent --|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent
+de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.abfrage.BestellungsabfrageEvent --|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent
+de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent --|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent
 de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAbholort --|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent
-de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeMitAdresseEvent --|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent
+de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEventMitAdresse --|>  de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent
 
 
 @enduml

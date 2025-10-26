@@ -3,18 +3,18 @@ package de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.event
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Kundennummer;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.AbholortReferenz;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse;
-import de.weinbrecht.luc.architecture.ddd.demo.domain.events.type.DomainBoundaryTransportObject;
+import de.weinbrecht.luc.architecture.ddd.demo.domain.events.type.DomainEvent;
 import io.github.domainprimitives.object.DomainObject;
 import lombok.Getter;
 
 @Getter
-public abstract class BestellungBoundaryEvent extends DomainObject implements DomainBoundaryTransportObject  {
+public abstract class BestellungEvent extends DomainObject implements DomainEvent  {
 
     private final Kundennummer kundennummer;
     private final Adresse adresse;
     private final AbholortReferenz abholortReferenz;
 
-    protected BestellungBoundaryEvent(Kundennummer kundennummer, Adresse adresse) {
+    protected BestellungEvent(Kundennummer kundennummer, Adresse adresse) {
         this.kundennummer = kundennummer;
         this.adresse = adresse;
         this.abholortReferenz = null;
@@ -24,7 +24,7 @@ public abstract class BestellungBoundaryEvent extends DomainObject implements Do
         validate();
     }
 
-    protected BestellungBoundaryEvent(Kundennummer kundennummer, AbholortReferenz abholortReferenz) {
+    protected BestellungEvent(Kundennummer kundennummer, AbholortReferenz abholortReferenz) {
         this.kundennummer = kundennummer;
         this.adresse = null;
         this.abholortReferenz = abholortReferenz;

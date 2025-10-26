@@ -35,7 +35,12 @@ include::../domain/service/src/main/java/de/weinbrecht/luc/architecture/ddd/demo
 
 ==== Domänen Events zur Steigerung der Ausdrucksstärke
 
-Da in dem hier beschriebenen Einsatzszenario, das Aggregate eine Entität aus unterschiedlichen Quellen (ad-hoc und Referenz) abbildet, muss auch die Erzeugung des Aggregates angepasst werden. Dazu wird mit `DomainBoundaryTransportObject` gearbeitet. Es ist weiterhin wichtig, dass der Domänenkern die Validierung der Fachlichkeit abbildet.
+[source,java]
+----
+include::../domain-event-type/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/type/DomainEvent.java[lines=3..7]
+----
+
+Da in dem hier beschriebenen Einsatzszenario, das Aggregate eine Entität aus unterschiedlichen Quellen (ad-hoc und Referenz) abbildet, muss auch die Erzeugung des Aggregates angepasst werden. Dazu wird mit `DomainEvent` gearbeitet. Es ist weiterhin wichtig, dass der Domänenkern die Validierung der Fachlichkeit abbildet.
 
 Die der Erzeugung des Domänenobjektes wird nachfolgend im Kontext des Beststellungsbeispiel dargestellt:
 

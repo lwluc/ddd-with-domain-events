@@ -3,9 +3,9 @@ package de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.event
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Kundennummer;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.AbholortReferenz;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse;
-import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent;
+import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent;
 
-public abstract class BestellungsaufgabeEvent extends BestellungBoundaryEvent {
+public abstract class BestellungsaufgabeEvent extends BestellungEvent {
 
     public BestellungsaufgabeEvent(
             Kundennummer kundennummer,

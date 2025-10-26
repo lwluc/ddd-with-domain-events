@@ -4,10 +4,10 @@ import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestel
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Kundennummer;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.AbholortReferenz;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse;
-import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungBoundaryEvent;
+import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.BestellungEvent;
 import lombok.Getter;
 
-public class BestellungsabfrageEvent extends BestellungBoundaryEvent {
+public class BestellungsabfrageEvent extends BestellungEvent {
 
     @Getter
     private final Bestellnummer bestellnummer;
