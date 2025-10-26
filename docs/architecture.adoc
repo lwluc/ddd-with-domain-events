@@ -2,47 +2,70 @@
 
 == Lösungsstrategie
 
-=== Aggregate mit Entiät aus unterschiedlichen Quellen
+=== Aggregate mit Entitäten aus unterschiedlichen Quellen
+
+==== Motivation
+
+In komplexen Domänen kommt es vor, dass ein Aggregat Entitäten enthält, deren Daten aus unterschiedlichen Quellen stammen.  
+
+Ein klassisches Beispiel ist die **Adresse einer Bestellung**: Sie kann entweder direkt im Aggregat eingebettet sein (z. B. Lieferadresse des Kunden) oder als Referenz auf eine Entität aus einem anderen Bounded Context vorliegen (z. B. ein externer Abholort aus dem Logistik-Kontext).
+
+Die Herausforderung besteht darin, die **fachliche Konsistenz** und **technische Entkopplung** sicherzustellen, ohne dass der Client wissen muss, wie oder woher die jeweilige Entität geladen wird.
+
+---
 
 |===
 |Aspekt | Beschreibung
 
 |Einsatzbereich
-|Hat ein Aggregate eine Entität, die sowohl eine ad-hoc Entität oder ein Value Objekt sein kann, als auch eine Referenz auf ein anderes Aggregat.
+|Wenn ein Aggregat eine Entität enthält, die entweder als eingebettete (ad-hoc) Entität bzw. Value Object modelliert ist oder als Referenz auf ein anderes Aggregat aus einem anderen Bounded Context vorliegt.
 
 |Ziel
-|Der Client des Domänenobjektes mit soll nicht selbst entscheiden müssen, wie er die richtige Entität bzw. die Referenz des Aggregates auflösen muss.
+|Der Client des Domänenobjekts soll nicht selbst entscheiden müssen, wie die zugrunde liegende Entität oder Aggregatreferenz aufgelöst wird.
 |===
 
-Um dem Client den Abruf der Entität des Aggregates zu erleichtern, bzw. das Wissen darüber, wie die unterschiedlichen Quellen zur Auflösung der Entität zu nutzen sind, löst das Aggregate dieses auf. Die Auflösung erfolgt über Callback Funktionen die dem Aggregate bei der Erzeugung im Domain-Service übergeben werden. Dadurch bleibt das Aggregate anämisch.
+---
 
-Nachfolgend wird ein Beispiel aufgezeigt, indem eine Bestellung eine eigene Adresse als Entität der Bestellung haben kann oder einen Referenz auf einen Abholort. Der Client der Bestellung soll das Wissen über die Auflösung der Adresse nicht kennen, daher löst das Aggregate selbst die Adresse für den Client auf.
+Um dem Client die Nutzung zu vereinfachen und das Wissen über unterschiedliche Quellen zu kapseln, übernimmt das Aggregat selbst die Auflösung der konkreten Instanz.  
+Dies geschieht über **Callback-Funktionen**, die dem Aggregat bei seiner Erzeugung durch den **Domain Service** übergeben werden.  
+Dadurch bleibt das Aggregat **anämisch und frei von Infrastrukturabhängigkeiten**.
+
+Im folgenden Beispiel kann eine *Bestellung* entweder eine eigene Adresse (als eingebettetes Value Object innerhalb des Aggregats) oder eine Referenz auf einen externen *Abholort* enthalten.  
+Der Client soll dabei nicht wissen müssen, aus welcher Quelle die Adresse stammt – das Aggregat löst diese eigenständig auf.
 
 [source,java]
 ----
 include::../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[lines=85..90]
 ----
 
-Durch die Abbildung über eine Callback Funktion wird die Adresse einer Bestellung auch automatisch *layz loaded*. D.h. unabhängig von der Quelle, aus der die Adresse geladen werden muss, wird diese erst dann abgerufen, wenn der Client den Getter der Adresse der Bestellung aufruft. Die gesamte Abbildung des Aggretates ist link:../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[hier] zu finden.
+Ein **weiterer Vorteil** dieser Implementierung ist, dass die Adresse einer Bestellung automatisch *lazy loaded* wird.  
+Unabhängig davon, ob sie aus dem lokalen Aggregat oder über einen Adapter aus einem anderen Bounded Context geladen wird, erfolgt der Zugriff erst beim Aufruf des Getters.  
+Dies führt zu einer **sauberen Entkopplung** und einer **effizienten Ressourcennutzung**.
 
+Die vollständige Implementierung des Aggregats ist hier zu finden:  
+link:../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[hier].
 
-Beim Abfragen des Aggregates im Domain-Service, in dem Beispiel hier dem link:../domain/service/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/service/BestellungDomainService.java[BestellungDomainService.java], werden die entsprechenden Callbacks übergeben, sodass die Adresse zur Laufzeit ermittelt werden kann:
+Beim Erzeugen des Aggregats im Domain Service – in diesem Beispiel im  
+link:../domain/service/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/service/BestellungDomainService.java[BestellungDomainService.java] –  
+werden die entsprechenden Callbacks gesetzt, sodass die Adresse zur Laufzeit ermittelt werden kann:
 
 [source,java]
 ----
 include::../domain/service/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/service/BestellungDomainService.java[lines=49..62]
 ----
 
-==== Domänen Events zur Steigerung der Ausdrucksstärke
+==== Domänen-Events zur Steigerung der Ausdrucksstärke
 
 [source,java]
 ----
 include::../domain-event-type/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/type/DomainEvent.java[lines=3..7]
 ----
 
-Da in dem hier beschriebenen Einsatzszenario, das Aggregate eine Entität aus unterschiedlichen Quellen (ad-hoc und Referenz) abbildet, muss auch die Erzeugung des Aggregates angepasst werden. Dazu wird mit `DomainEvent` gearbeitet. Es ist weiterhin wichtig, dass der Domänenkern die Validierung der Fachlichkeit abbildet.
+Da in diesem Szenario ein Aggregat Entitäten aus unterschiedlichen Quellen (eingebettet oder referenziert) abbildet, muss auch die **Erzeugung des Aggregats** angepasst werden.  
+Dies erfolgt über die Verwendung von `DomainEvent`, um sowohl die Entstehung als auch die fachliche Korrektheit des Domänenobjekts klar auszudrücken.  
+Die Validierung der Fachlichkeit verbleibt dabei konsequent im Domänenkern.
 
-Die der Erzeugung des Domänenobjektes wird nachfolgend im Kontext des Beststellungsbeispiel dargestellt:
+Das folgende Beispiel zeigt die Erzeugung des Domänenobjekts im Kontext der *Bestellung*:
 
 [source,java]
 ----
@@ -63,3 +86,68 @@ include::clean_architecture_domain_events.puml[format=svg]
 ....
 include::domain-service-classes.puml[format=svg]
 ....
+
+== Entwurfsentscheidungen
+
+=== Architekturentscheidung: Aggregate mit Entitäten aus unterschiedlichen Quellen
+
+[cols="1,3"]
+|===
+| **Datum** | 2025-10-17
+| **Status** | beschlossen
+| **Verantwortlich** | Architekturteam / Domänenarchitekt
+| **Version** | 1.0
+|===
+
+==== Kontext und Problemstellung
+
+In der Domäne *E-Commerce* soll das Aggregat *Bestellung* eine **Adresse** enthalten, die aus unterschiedlichen Quellen stammen kann:
+
+* entweder als eingebettetes Value Object innerhalb des Aggregats (z. B. Lieferadresse des Kunden),
+* oder als Referenz auf ein externes Aggregat (z. B. Abholort aus dem Logistik-Kontext).
+
+Das Aggregat darf dabei **nicht** von Infrastruktur- oder Integrationslogik abhängen.  
+Zugleich soll der **Client** (z. B. Application Service) **nicht selbst wissen müssen**, wie oder woher die Adresse zu laden ist.
+
+==== Entscheidung
+
+Das Aggregat löst die Entität eigenständig über **Callback-Funktionen** auf, die bei seiner Erzeugung vom **Domain Service** übergeben werden.  
+Dadurch kann die konkrete Quelle der Entität (lokal oder extern) zur Laufzeit bestimmt werden, ohne die Domäne zu verunreinigen.
+
+Die Adressdaten werden **lazy geladen** – also erst dann abgerufen, wenn der Client auf die Adresse zugreift.  
+Dies ermöglicht eine **effiziente Ressourcennutzung** und entkoppelt die Lebenszyklen der beteiligten Kontexte.
+
+==== Begründung
+
+* Das Aggregat bleibt **rein domänenorientiert** (keine Infrastrukturabhängigkeit).
+* Durch Lazy Loading entsteht eine **performante, bedarfsgesteuerte Datenbeschaffung**.
+* Die **Callback-Strategie** erlaubt es, externe Datenquellen flexibel einzubinden (z. B. Logistikservice, Kundendatenbank).
+* Domain Events können zusätzlich genutzt werden, um die Entstehung und Konsistenz des Aggregats explizit darzustellen.
+
+==== Konsequenzen
+
+**Vorteile:**
+
+* Saubere Trennung von Domäne und Infrastruktur  
+* Hohe Ausdrucksstärke des Domänenmodells  
+* Effiziente Datenbeschaffung (Lazy Loading)  
+* Geringer Kopplungsgrad zwischen Bounded Contexts  
+
+**Nachteile / Risiken:**
+
+* Lazy Loading erschwert Debugging und Monitoring  
+* Potenzielle Netzwerkaufrufe bei Zugriff (Latenzrisiko)  
+* Erhöhter Testaufwand (Callbacks müssen gemockt werden)  
+* Zusätzliche Fehlerbehandlung bei Callback-Auflösung notwendig  
+
+==== Alternativen
+
+* Direkte Auflösung der Referenzen durch den Client  
+  → würde die Entkopplung verletzen und Infrastrukturwissen in den Application Layer verlagern.  
+* Synchrones Laden aller abhängigen Entitäten bei Erzeugung des Aggregats  
+  → würde die Performance verschlechtern und Aggregatgrößen künstlich aufblähen.  
+
+==== Bewertung
+
+Der gewählte Ansatz bietet ein gutes Gleichgewicht zwischen **Kapselung, Ausdrucksstärke und Flexibilität**.  
+Er eignet sich besonders für Szenarien, in denen Aggregate sowohl **eingebettete als auch referenzierte Entitäten** enthalten und die Quelle erst zur Laufzeit bestimmt werden soll.
