@@ -4,21 +4,29 @@ import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adress
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.abfrage.BestellungsabfrageEvent;
 import de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent;
 import io.github.domainprimitives.validation.InvariantException;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class BestellungTest {
 
     private static final Bestellnummer BESTELLNUMMER = new Bestellnummer("77");
     private static final Kundennummer KUNDENNUMMER = new Kundennummer("99");
     private static final AbholortReferenz ABHOLORT_REFERENZ = new AbholortReferenz("12");
+
+    private static final Adresse ADRESSE = new Adresse(
+            new Strasse("Testweg"),
+            new Hausnummer("12a"),
+            new Postleitzahl("12345"),
+            new Ort("Testung")
+    );
 
     private static final BestellungsabfrageEvent BESTELLUNGSABFRAGE_EVENT_ABHOLORT = new BestellungsabfrageEvent(
             BESTELLNUMMER,
@@ -29,12 +37,7 @@ class BestellungTest {
     private static final BestellungsabfrageEvent BESTELLUNGSABFRAGE_EVENT_ADRESSE = new BestellungsabfrageEvent(
             BESTELLNUMMER,
             KUNDENNUMMER,
-            new Adresse(
-                    new Strasse("Testweg"),
-                    new Hausnummer("12a"),
-                    new Postleitzahl("12345"),
-                    new Ort("Testung")
-            )
+            ADRESSE
     );
 
     private static final Function<Bestellnummer, Adresse> BESTELLNUMMER_ADRESSE_FUNCTION = (bestellnummer) -> null;
@@ -61,6 +64,102 @@ class BestellungTest {
                 )
         );
     }
+
+    @Nested
+    class TestCaching {
+
+        @Nested
+        class TestAbholortCallback {
+
+            @Test
+            void should_query_only_once() {
+                final Function<Bestellnummer, Adresse> adresseCallbackMock = mock();
+                final Function<AbholortReferenz, Adresse> abholortCallbackMock = mock();
+                when(abholortCallbackMock.apply(ABHOLORT_REFERENZ)).thenReturn(ADRESSE);
+                final Bestellung bestellung = new Bestellung(
+                        BESTELLUNGSABFRAGE_EVENT_ABHOLORT,
+                        adresseCallbackMock,
+                        abholortCallbackMock
+                );
+
+                final Adresse adresseFirstCall = bestellung.getAdresse();
+                final Adresse adresseSecondCall = bestellung.getAdresse();
+
+                assertThat(adresseFirstCall).isEqualTo(adresseSecondCall);
+                verify(abholortCallbackMock, times(1)).apply(ABHOLORT_REFERENZ);
+                verifyNoInteractions(adresseCallbackMock);
+            }
+
+            @Test
+            void should_query_twice_if_forced() {
+                final Function<Bestellnummer, Adresse> adresseCallbackMock = mock();
+                final Function<AbholortReferenz, Adresse> abholortCallbackMock = mock();
+                when(abholortCallbackMock.apply(ABHOLORT_REFERENZ)).thenReturn(ADRESSE);
+                Bestellung bestellung = new Bestellung(
+                        BESTELLUNGSABFRAGE_EVENT_ABHOLORT,
+                        adresseCallbackMock,
+                        abholortCallbackMock
+                );
+
+                Adresse adresseFirstCall = bestellung.getAdresse();
+                Adresse adresseSecondCall = bestellung.getAdresse(true);
+
+                SoftAssertions softAssertions = new SoftAssertions();
+                softAssertions.assertThat(adresseFirstCall).isEqualTo(ADRESSE);
+                softAssertions.assertThat(adresseSecondCall).isEqualTo(ADRESSE);
+                softAssertions.assertAll();
+                verify(abholortCallbackMock, times(2)).apply(ABHOLORT_REFERENZ);
+                verifyNoInteractions(adresseCallbackMock);
+            }
+        }
+
+        @Nested
+        class TestAdresseCallback {
+
+            @Test
+            void should_query_only_once() {
+                final Function<Bestellnummer, Adresse> adresseCallbackMock = mock();
+                final Function<AbholortReferenz, Adresse> abholortCallbackMock = mock();
+                when(adresseCallbackMock.apply(BESTELLNUMMER)).thenReturn(ADRESSE);
+                final Bestellung bestellung = new Bestellung(
+                        BESTELLUNGSABFRAGE_EVENT_ADRESSE,
+                        adresseCallbackMock,
+                        abholortCallbackMock
+                );
+
+                final Adresse adresseFirstCall = bestellung.getAdresse();
+                final Adresse adresseSecondCall = bestellung.getAdresse();
+
+                assertThat(adresseFirstCall).isEqualTo(adresseSecondCall);
+                verify(adresseCallbackMock, times(1)).apply(BESTELLNUMMER);
+                verifyNoInteractions(abholortCallbackMock);
+            }
+
+            @Test
+            void should_query_twice_if_forced() {
+                final Function<Bestellnummer, Adresse> adresseCallbackMock = mock();
+                final Function<AbholortReferenz, Adresse> abholortCallbackMock = mock();
+                when(adresseCallbackMock.apply(BESTELLNUMMER)).thenReturn(ADRESSE);
+                Bestellung bestellung = new Bestellung(
+                        BESTELLUNGSABFRAGE_EVENT_ADRESSE,
+                        adresseCallbackMock,
+                        abholortCallbackMock
+                );
+
+                Adresse adresseFirstCall = bestellung.getAdresse();
+                Adresse adresseSecondCall = bestellung.getAdresse(true);
+
+                SoftAssertions softAssertions = new SoftAssertions();
+                softAssertions.assertThat(adresseFirstCall).isEqualTo(ADRESSE);
+                softAssertions.assertThat(adresseSecondCall).isEqualTo(ADRESSE);
+                softAssertions.assertAll();
+                verify(adresseCallbackMock, times(2)).apply(BESTELLNUMMER);
+                verifyNoInteractions(abholortCallbackMock);
+            }
+        }
+    }
+
+
 
     @Nested
     class TestInvariants {

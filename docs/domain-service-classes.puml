@@ -7,7 +7,10 @@ class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestell
 class de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestellung {
 	{field} -abholortSupplier : java.util.function.Function
 	{field} -adresseSupplier : java.util.function.Function
+	{field} -cachedAdresse : java.util.concurrent.atomic.AtomicReference
 	{method} +getAdresse () : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse
+	{method} +getAdresse ( forceUpdate : boolean ) : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse
+	{method} -loadAdresse () : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse.Adresse
 	{method} #validate () : void
 	{method}  {static} +validate ( bestellnummer : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.Bestellnummer , bestellungsaufgabeEvent : de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.events.erzeugung.BestellungsaufgabeEvent ) : void
 }

@@ -26,21 +26,25 @@ Die Herausforderung besteht darin, die **fachliche Konsistenz** und **technische
 
 ---
 
-Um dem Client die Nutzung zu vereinfachen und das Wissen über unterschiedliche Quellen zu kapseln, übernimmt das Aggregat selbst die Auflösung der konkreten Instanz.  
-Dies geschieht über **Callback-Funktionen**, die dem Aggregat bei seiner Erzeugung durch den **Domain Service** übergeben werden.  
+Um dem Client die Nutzung zu vereinfachen und das Wissen über unterschiedliche Quellen zu kapseln, übernimmt das Aggregat selbst die Auflösung der konkreten Instanz.
+Dies geschieht über **Callback-Funktionen**, die dem Aggregat bei seiner Erzeugung durch den **Domain Service** übergeben werden.
 Dadurch bleibt das Aggregat **anämisch und frei von Infrastrukturabhängigkeiten**.
+Zur **Optimierung der Performance** wird das Ergebnis der ersten Auflösung im Aggregat zwischengespeichert; der Client kann bei Bedarf jedoch ein erneutes Laden erzwingen, um aktuelle Daten sicherzustellen.
+
 
 Im folgenden Beispiel kann eine *Bestellung* entweder eine eigene Adresse (als eingebettetes Value Object innerhalb des Aggregats) oder eine Referenz auf einen externen *Abholort* enthalten.  
 Der Client soll dabei nicht wissen müssen, aus welcher Quelle die Adresse stammt – das Aggregat löst diese eigenständig auf.
 
 [source,java]
 ----
-include::../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[lines=85..90]
+include::../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[lines=90..109]
 ----
 
 Ein **weiterer Vorteil** dieser Implementierung ist, dass die Adresse einer Bestellung automatisch *lazy loaded* wird.  
 Unabhängig davon, ob sie aus dem lokalen Aggregat oder über einen Adapter aus einem anderen Bounded Context geladen wird, erfolgt der Zugriff erst beim Aufruf des Getters.  
 Dies führt zu einer **sauberen Entkopplung** und einer **effizienten Ressourcennutzung**.
+
+Die Verwendung von `AtomicReference` ermöglicht dabei eine sichere, konsistente Verwaltung des zwischengespeicherten Werts auch, wenn das Aggregat in einem Kontext mit parallelen Zugriffen genutzt wird. Sie stellt sicher, dass die Adresse nur einmal geladen und danach zuverlässig wiederverwendet wird, ohne dass externe Synchronisierung notwendig ist.
 
 Die vollständige Implementierung des Aggregats ist hier zu finden:  
 link:../domain/model/src/main/java/de/weinbrecht/luc/architecture/ddd/demo/domain/events/domain/model/Bestellung.java[hier].

@@ -9,6 +9,8 @@ import io.github.domainprimitives.validation.InvariantException;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 @Getter
@@ -25,6 +27,9 @@ public class Bestellung extends Aggregate {
 
     @Getter(AccessLevel.NONE)
     private final Function<AbholortReferenz, Adresse> abholortSupplier;
+
+    @Getter(AccessLevel.NONE)
+    private final AtomicReference<Adresse> cachedAdresse = new AtomicReference<>();
 
     public Bestellung(
             BestellungsabfrageEvent bestellungsabfrageEvent,
@@ -83,10 +88,24 @@ public class Bestellung extends Aggregate {
     }
 
     public Adresse getAdresse() {
-        if (abholortReferenz != null) {
-            return abholortSupplier.apply(abholortReferenz);
+        return getAdresse(false);
+    }
+
+    public Adresse getAdresse(boolean forceUpdate) {
+        if (!forceUpdate) {
+            return Optional.ofNullable(cachedAdresse.get())
+                    .orElseGet(this::loadAdresse);
         }
-        return adresseSupplier.apply(bestellnummer);
+        return loadAdresse();
+    }
+
+    private Adresse loadAdresse() {
+        Adresse neueAdresse = (abholortReferenz != null)
+                ? abholortSupplier.apply(abholortReferenz)
+                : adresseSupplier.apply(bestellnummer);
+
+        cachedAdresse.set(neueAdresse);
+        return neueAdresse;
     }
 
     public static void validate(Bestellnummer bestellnummer, BestellungsaufgabeEvent bestellungsaufgabeEvent) {
