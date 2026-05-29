@@ -1,10 +1,12 @@
 package de.weinbrecht.luc.architecture.ddd.demo.domain.events.domain.model.adresse;
 
-import io.github.domainprimitives.object.Entity;
+import io.github.domainprimitives.object.ValueObject;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
-public class Adresse extends Entity {
+public class Adresse extends ValueObject {
 
     private final Strasse strasse;
     private final Hausnummer hausnummer;
@@ -28,5 +30,10 @@ public class Adresse extends Entity {
         validateNotNull(ort, "Ort");
 
         evaluateValidations();
+    }
+
+    @Override
+    protected List<Object> getEqualityComponents() {
+        return List.of(strasse, hausnummer, postleitzahl, ort);
     }
 }
