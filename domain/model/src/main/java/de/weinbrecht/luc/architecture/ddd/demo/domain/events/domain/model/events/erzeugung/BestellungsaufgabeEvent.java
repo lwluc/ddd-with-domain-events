@@ -21,6 +21,6 @@ public abstract class BestellungsaufgabeEvent extends BestellungEvent {
     }
 
     public boolean isBestellungsspezifischeAdresse() {
-        return getAdresse() != null;
+        return getAdresse().isPresent();
     }
 }

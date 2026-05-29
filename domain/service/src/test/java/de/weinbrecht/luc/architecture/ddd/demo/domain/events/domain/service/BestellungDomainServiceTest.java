@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -113,7 +115,7 @@ class BestellungDomainServiceTest {
         void should_query_from_repo_with_abholort() {
             final Adresse expectedAdresse = mock(Adresse.class);
             when(bestellungRepositoryMock.find(BESTELLNUMMER)).thenReturn(BESTELLUNGSABFRAGE_EVENT_ABHOLORT);
-            when(adresseServiceMock.getAbholort(BESTELLUNGSABFRAGE_EVENT_ABHOLORT.getAbholortReferenz()))
+            when(adresseServiceMock.getAbholort(BESTELLUNGSABFRAGE_EVENT_ABHOLORT.getAbholortReferenz().orElse(null)))
                     .thenReturn(expectedAdresse);
 
             Bestellung result = classUnderTest.query(BESTELLNUMMER);
