@@ -8,6 +8,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -187,7 +188,7 @@ class BestellungTest {
             final BestellungsabfrageEvent bestellungsabfrageEventMock = mock(BestellungsabfrageEvent.class);
             when(bestellungsabfrageEventMock.getBestellnummer()).thenReturn(null);
             when(bestellungsabfrageEventMock.getKundennummer()).thenReturn(KUNDENNUMMER);
-            when(bestellungsabfrageEventMock.getAbholortReferenz()).thenReturn(ABHOLORT_REFERENZ);
+            when(bestellungsabfrageEventMock.getAbholortReferenz()).thenReturn(Optional.of(ABHOLORT_REFERENZ));
 
             assertThatThrownBy(() ->
                     new Bestellung(bestellungsabfrageEventMock, BESTELLNUMMER_ADRESSE_FUNCTION, ABHOLORT_REFERENZ_ADRESSE_FUNCTION)
@@ -201,7 +202,7 @@ class BestellungTest {
             final BestellungsabfrageEvent bestellungsabfrageEventMock = mock(BestellungsabfrageEvent.class);
             when(bestellungsabfrageEventMock.getBestellnummer()).thenReturn(BESTELLNUMMER);
             when(bestellungsabfrageEventMock.getKundennummer()).thenReturn(null);
-            when(bestellungsabfrageEventMock.getAbholortReferenz()).thenReturn(ABHOLORT_REFERENZ);
+            when(bestellungsabfrageEventMock.getAbholortReferenz()).thenReturn(Optional.of(ABHOLORT_REFERENZ));
 
             assertThatThrownBy(() ->
                     new Bestellung(bestellungsabfrageEventMock, BESTELLNUMMER_ADRESSE_FUNCTION, ABHOLORT_REFERENZ_ADRESSE_FUNCTION)
@@ -215,7 +216,7 @@ class BestellungTest {
             final BestellungsaufgabeEvent bestellungsaufgabeEventMock = mock(BestellungsaufgabeEvent.class);
             when(bestellungsaufgabeEventMock.getKundennummer()).thenReturn(KUNDENNUMMER);
             when(bestellungsaufgabeEventMock.isBestellungsspezifischeAdresse()).thenReturn(true);
-            when(bestellungsaufgabeEventMock.getAdresse()).thenReturn(null);
+            when(bestellungsaufgabeEventMock.getAdresse()).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
                     Bestellung.validate(BESTELLNUMMER, bestellungsaufgabeEventMock)
@@ -229,7 +230,7 @@ class BestellungTest {
             final BestellungsaufgabeEvent bestellungsaufgabeEventMock = mock(BestellungsaufgabeEvent.class);
             when(bestellungsaufgabeEventMock.getKundennummer()).thenReturn(KUNDENNUMMER);
             when(bestellungsaufgabeEventMock.isBestellungsspezifischeAdresse()).thenReturn(true);
-            when(bestellungsaufgabeEventMock.getAdresse()).thenReturn(mock(Adresse.class));
+            when(bestellungsaufgabeEventMock.getAdresse()).thenReturn(Optional.of(mock(Adresse.class)));
 
             assertDoesNotThrow(() -> Bestellung.validate(BESTELLNUMMER, bestellungsaufgabeEventMock));
         }

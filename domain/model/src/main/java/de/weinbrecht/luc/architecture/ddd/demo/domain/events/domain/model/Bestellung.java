@@ -39,7 +39,7 @@ public class Bestellung extends Aggregate {
         this(
                 bestellungsabfrageEvent.getBestellnummer(),
                 bestellungsabfrageEvent.getKundennummer(),
-                bestellungsabfrageEvent.getAbholortReferenz(),
+                bestellungsabfrageEvent.getAbholortReferenz().orElse(null),
                 adresseSupplier,
                 abholortSupplier
         );
@@ -112,10 +112,10 @@ public class Bestellung extends Aggregate {
         new Bestellung(
                 bestellnummer,
                 bestellungsaufgabeEvent.getKundennummer(),
-                bestellungsaufgabeEvent.getAbholortReferenz()
+                bestellungsaufgabeEvent.getAbholortReferenz().orElse(null)
         );
 
-        if (bestellungsaufgabeEvent.isBestellungsspezifischeAdresse() && bestellungsaufgabeEvent.getAdresse() == null) {
+        if (bestellungsaufgabeEvent.isBestellungsspezifischeAdresse() && !bestellungsaufgabeEvent.getAdresse().isPresent()) {
             throw new InvariantException("Bestellung", "Eine Bestellung ohne Abholort oder Adresse ist nicht erlaubt.");
         }
     }
