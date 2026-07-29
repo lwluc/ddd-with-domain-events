@@ -1,0 +1,6 @@
+# See Configuration Options: https://github.com/blopker/codebook#configuration-options
+
+dictionaries = ["de", "en_us"]
+
+# Custom allowlist of words to ignore (case-insensitive).
+words = ["mvnw", "fachlichkeit", "validierungen"]
